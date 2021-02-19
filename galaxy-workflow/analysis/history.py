@@ -28,7 +28,7 @@ class History:
 
         if history:
             # if the history with that name exists return it, don't create a new one.
-            return history
+            return history[0]
         else:
             # create a new history
             try:

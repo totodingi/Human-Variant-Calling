@@ -19,6 +19,7 @@ class QualityControl:
         """
         self.gi = create_instance()  # create a galaxy instance
         self.history = History().create_history(history_name)  # create a history instance
+        print("This is history : ", self.history)
 
     def perform_fastqc(self):
         """

@@ -10,12 +10,15 @@ Copy the API key and copy paste it into a file called a text file in the same di
 as the main.py file.
 """
 
+from analysis.quality_control import QualityControl  # import the quality control class
+
 
 def main():
     """
     This is the main function that calls other functions and classes in the project.
     :return:
     """
+    QualityControl('Human-Variant-Calling')  # call the quality control class.
 
 
 if __name__ == '__main__':

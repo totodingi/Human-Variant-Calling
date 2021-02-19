@@ -12,7 +12,7 @@ from bioblend.galaxy import GalaxyInstance  # imports the GalaxyInstance class f
 
 def create_instance():
     # Reads the api Key as stored in the text file.
-    with open("../apikey.txt") as key:
+    with open("apikey.txt") as key:
         apikey = key.read()
         key.close()
     # Creates a galaxy instance with the api key provided and the url from the galaxy server
