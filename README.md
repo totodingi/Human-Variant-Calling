@@ -7,9 +7,9 @@ perform Human variant calling analysis on sequence data.
 
 The workflows will be implemented with the three most common 
 workflow systems:
-1. Snakemake
-2. Nextflow
-3. Galaxy
+1. [Snakemake](https://snakemake.github.io/)
+2. [Nextflow](https://www.nextflow.io/)
+3. [Galaxy](https://galaxyproject.org/)
 
 For the data, we shall be using the dataset provided by [H3ABioNet](https://www.h3abionet.org/) 
 which can be found [here](http://h3data.cbio.uct.ac.za/assessments/NextGenVariantCalling/practice/H3A_VarCall_TestData.2017.zip).

@@ -26,7 +26,7 @@ class Data:
         """
         if remote:
             # executed if the data is remote
-            self.gi.tools.upload_from_ftp(path, history_id)
+            self.gi.tools.paste_content(path, history_id)
             return True
         else:
             # Executed if the data being uploaded is local

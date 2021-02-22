@@ -18,7 +18,7 @@ def main():
     This is the main function that calls other functions and classes in the project.
     :return:
     """
-    QualityControl('Human-Variant-Calling')  # call the quality control class.
+    QualityControl(history_name='Human-Variant-Calling', remote=True, path='http://h3data.cbio.uct.ac.za/assessments/NextGenVariantCalling/practice/H3A_VarCall_TestData.2017.zip')  # call the quality control class.
 
 
 if __name__ == '__main__':
