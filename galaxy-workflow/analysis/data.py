@@ -32,3 +32,11 @@ class Data:
             # Executed if the data being uploaded is local
             self.gi.tools.upload_file(path, history_id)
             return True
+
+    def unzip_data(self, history_id, tool_id):
+        """
+        the functions unzips the data if it happens to be a zip file
+        :param data:
+        :return:
+        """
+        self.gi.tools.run_tool(history_id=history_id, tool_id=tool_id)

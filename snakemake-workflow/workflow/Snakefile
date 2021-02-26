@@ -1,0 +1,62 @@
+
+projectDir = "../../"
+dataDir = f"{projectDir}datasets/H3A_VarCall_TestData/WES_chr1_50X_E0.005/"
+# reads = f"{dataDir}*read*"
+read1 = f"{dataDir}WES_chr1_50X_E0.005_merged_read1.fq.gz"
+read2 = f"{dataDir}WES_chr1_50X_E0.005_merged_read2.fq.gz"
+# read_1 = f"{projectDir}datasets/H3A_VarCall_TestData/WES_chr1_50X_E0.005/WES_chr1_50X_E0.005_merged_read1.fq.gz"
+# read_2 = "../../datasets/H3A_VarCall_TestData/WES_chr1_50X_E0.005/WES_chr1_50X_E0.005_merged_read2.fq.gz"
+
+rule run_fastqc:
+    input:
+        read1,
+        read2
+
+    threads: 10
+    message:
+        "Now running fastqc on the raw data"
+    shell:
+        "mkdir -p ../results/fastqc &&  "
+        "fastqc -o ../results/fastqc --extract {read1} {read2} "
+
+
+rule trim_sequences:
+    input:
+        read1,
+        read2
+    output:
+        output1='../results/trimmomatic/filtered_reads_1U.fq.gz',
+        output2= '../results/trimmomatic/filtered_reads_1P.fq.gz',
+        output3='../results/trimmomatic/filtered_reads_2U.fq.gz',
+        output4='../results/trimmomatic/filtered_reads_2P.fq.gz'
+    threads:
+        10
+    message:
+        "Now running trimmomatic on the sequences"
+    shell:
+        "mkdir -p ../results/trimmomatic \n"
+        "trimmomatic PE {read1} {read2} -baseout '../results/trimmomatic/filtered_reads.fq.gz' "
+        "-trimlog '../results/trimmomatic/trimlog' -phred33 -threads 10"
+        " HEADCROP:15 TRAILING:3 SLIDINGWINDOW:4:15 MINLEN:36"
+
+rule trimmed_fastqc:
+    input:
+        read1_P=rules.trim_sequences.output.output2,
+        read1_U=rules.trim_sequences.output.output1,
+        read2_P=rules.trim_sequences.output.output4,
+        read2_U=rules.trim_sequences.output.output3
+    output:
+        directory('../results/fastqc/trimmed')
+    log:
+        '../results/fastqc/trimmed/log'
+    message:
+        "Now running fastqc on trimmed sequences"
+    shell:
+        "mkdir -p {output} \n"
+        "fastqc -o {output} --extract {input.read1_P} {input.read2_P} \n"
+        "fastqc -o {output} --extract {input.read1_U} {input.read2_U} \n"
+
+
+
+
+
