@@ -13,11 +13,13 @@ rule run_fastqc:
         read2
 
     threads: 10
+    output:
+        directory('../results/fastqc/')
     message:
         "Now running fastqc on the raw data"
     shell:
-        "mkdir -p ../results/fastqc &&  "
-        "fastqc -o ../results/fastqc --extract {read1} {read2} "
+        "mkdir -p {output} &&  "
+        "fastqc -o {output} --extract {read1} {read2} "
 
 
 rule trim_sequences:
@@ -25,38 +27,46 @@ rule trim_sequences:
         read1,
         read2
     output:
-        output1='../results/trimmomatic/filtered_reads_1U.fq.gz',
-        output2= '../results/trimmomatic/filtered_reads_1P.fq.gz',
-        output3='../results/trimmomatic/filtered_reads_2U.fq.gz',
-        output4='../results/trimmomatic/filtered_reads_2P.fq.gz'
+        directory('../results/trimmomatic/')
     threads:
         10
     message:
         "Now running trimmomatic on the sequences"
     shell:
-        "mkdir -p ../results/trimmomatic \n"
-        "trimmomatic PE {read1} {read2} -baseout '../results/trimmomatic/filtered_reads.fq.gz' "
-        "-trimlog '../results/trimmomatic/trimlog' -phred33 -threads 10"
+        "mkdir -p {output} \n"
+        "trimmomatic PE {read1} {read2} -baseout '{output}filtered_reads.fq.gz' "
+        "-trimlog '{output}trimlog' -phred33 -threads 10"
         " HEADCROP:15 TRAILING:3 SLIDINGWINDOW:4:15 MINLEN:36"
+
+import os
+
+def get_seqs(dir):
+    print(dir)
+    files = []
+    for root, directory, fil in os.walk(str(dir)):
+        files.append(fil)
+    return files
 
 rule trimmed_fastqc:
     input:
-        read1_P=rules.trim_sequences.output.output2,
-        read1_U=rules.trim_sequences.output.output1,
-        read2_P=rules.trim_sequences.output.output4,
-        read2_U=rules.trim_sequences.output.output3
+        rules.trim_sequences.output
+
     output:
-        directory('../results/fastqc/trimmed')
-    log:
-        '../results/fastqc/trimmed/log'
+        directory('../results/trimmed_fastqc/')
+
     message:
         "Now running fastqc on trimmed sequences"
-    shell:
-        "mkdir -p {output} \n"
-        "fastqc -o {output} --extract {input.read1_P} {input.read2_P} \n"
-        "fastqc -o {output} --extract {input.read1_U} {input.read2_U} \n"
+    run:
+        shell("mkdir -p {output}")
+        for file in get_seqs(input):
+            if str(file).endswith(".fq.gz"):
+                file_path = str(input) + str(file)
+                shell("fastqc -o {output} --extract {file_path}")
 
-
-
-
-
+rule all:
+    input:
+        rules.run_fastqc.output,
+        rules.trim_sequences.output,
+        rules.trimmed_fastqc.output
+    message:
+        "Running the workflow"
