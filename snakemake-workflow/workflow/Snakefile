@@ -14,11 +14,11 @@ rule run_fastqc:
 
     threads: 10
     output:
-        directory('../results/fastqc/')
+        directory('../results/fastqc')
     message:
         "Now running fastqc on the raw data"
     shell:
-        "mkdir -p {output} &&  "
+        "mkdir -p {output} ;  "
         "fastqc -o {output} --extract {read1} {read2} "
 
 
@@ -27,16 +27,16 @@ rule trim_sequences:
         read1,
         read2
     output:
-        directory('../results/trimmomatic/')
+        directory('../results/trimmomatic')
     threads:
         10
     message:
         "Now running trimmomatic on the sequences"
     shell:
-        "mkdir -p {output} \n"
-        "trimmomatic PE {read1} {read2} -baseout '{output}filtered_reads.fq.gz' "
-        "-trimlog '{output}trimlog' -phred33 -threads 10"
-        " HEADCROP:15 TRAILING:3 SLIDINGWINDOW:4:15 MINLEN:36"
+        "mkdir -p {output} ;"
+        "trimmomatic PE {read1} {read2} -baseout '{output}/filtered_reads.fq.gz' "
+        "-trimlog '{output}/trimlog' -phred64 -threads {threads} "
+        "MINLEN:36"
 
 import os
 
@@ -57,16 +57,38 @@ rule trimmed_fastqc:
     message:
         "Now running fastqc on trimmed sequences"
     run:
-        shell("mkdir -p {output}")
-        for file in get_seqs(input):
-            if str(file).endswith(".fq.gz"):
-                file_path = str(input) + str(file)
-                shell("fastqc -o {output} --extract {file_path}")
+        shell("mkdir -p {output} ; ")
+        for file_list in get_seqs(input):
+            for file in file_list:
+                if str(file).endswith(".fq.gz"):
+                    file_path = str(input) + '/' + str(file)
+                    shell("fastqc -o {output} --extract {file_path} ;")
+
+rule run_alignment:
+    input:
+        rules.trim_sequences.output
+    output:
+        '../results/alignment/aligned_output.sam'
+    message:
+        "Now performing an alignment"
+    run:
+        shell("mkdir -p {output} ;")
+        ref_seq = f'{dataDir}dbsnp_138.hg19.NoChrInNames.vcf.gz'
+        align_read1 = ''
+        align_read2 = ''
+        for reads in get_seqs(input):
+            for read in reads:
+                if str(read).endswith('.1P.fq.gz'):
+                    align_read1 = str(input) + '/' + str(read)
+                elif str(read).endswith(".2P.fq.gz"):
+                    align_read2 = str(input) + '/' + str(read)
+        shell("bwa-mem2 mem {ref_seq} {align_read1} {align_read2} > {output} ;")
 
 rule all:
     input:
         rules.run_fastqc.output,
         rules.trim_sequences.output,
-        rules.trimmed_fastqc.output
+        rules.trimmed_fastqc.output,
+        rules.run_alignment.output
     message:
         "Running the workflow"
