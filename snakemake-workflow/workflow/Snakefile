@@ -6,7 +6,7 @@ read1 = f"{dataDir}WES_chr1_50X_E0.005_merged_read1.fq.gz"
 read2 = f"{dataDir}WES_chr1_50X_E0.005_merged_read2.fq.gz"
 # read_1 = f"{projectDir}datasets/H3A_VarCall_TestData/WES_chr1_50X_E0.005/WES_chr1_50X_E0.005_merged_read1.fq.gz"
 # read_2 = "../../datasets/H3A_VarCall_TestData/WES_chr1_50X_E0.005/WES_chr1_50X_E0.005_merged_read2.fq.gz"
-
+threads = 100
 rule run_fastqc:
     input:
         read1,
@@ -83,7 +83,7 @@ rule run_alignment:
                 elif str(read).endswith(".2P.fq.gz"):
                     align_read2 = str(input) + '/' + str(read)
         shell("bwa-mem2 index {ref_seq} ; ")
-        shell("bwa-mem2 mem {ref_seq} {align_read1} {align_read2} > {output} ;")
+        shell("bwa-mem2 mem -t {threads} {ref_seq} {align_read1} {align_read2} > {output} ;")
 
 rule all:
     input:
