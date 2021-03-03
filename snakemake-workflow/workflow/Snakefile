@@ -68,7 +68,7 @@ rule run_alignment:
     input:
         rules.trim_sequences.output
     output:
-        '../results/alignment/aligned_output.sam'
+        directory('../results/alignment/')
     message:
         "Now performing an alignment"
     run:
@@ -82,16 +82,15 @@ rule run_alignment:
                     align_read1 = str(input) + '/' + str(read)
                 elif str(read).endswith(".2P.fq.gz"):
                     align_read2 = str(input) + '/' + str(read)
-        shell("echo Starting indexing ;")
+
         shell("bwa-mem2 index {ref_seq} ; ")
-        shell("echo Done with the indexing ;")
-        # shell("bwa-mem2 mem -t {threads} {ref_seq} {align_read1} {align_read2} > {output} ;")
+        shell("bwa-mem2 mem -t {threads} {ref_seq} {align_read1} {align_read2} > {output}/aligned_output.sam ;")
 
 rule convert_sam_to_bam:
     input:
-        rules.run_alignment.output
+        f'{rules.run_alignment.output}/aligned_output.sam'
     output:
-        "../results/alignment/aligned_output.bam"
+        f'{rules.run_alignment.output}/aligned_output.bam'
     message:
         "Now converting the sam file into a bam file"
     shell:
