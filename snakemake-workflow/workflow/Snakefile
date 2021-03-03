@@ -94,11 +94,12 @@ rule convert_sam_to_bam:
     input:
         f'{rules.run_alignment.output}/aligned_output.sam'
     output:
-        f'{rules.run_alignment.output}/aligned_output.bam'
+        directory('../results/sam2bam/')
     message:
         "Now converting the sam file into a bam file"
     shell:
-        "picard SamFormatConverter I={input} O={output}"
+        "mkdir -p {output} ;"
+        "picard SamFormatConverter I={input} O={output}/aligned_output.bam"
 
 rule mark_duplicates:
     input:
