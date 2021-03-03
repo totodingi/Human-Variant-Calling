@@ -73,9 +73,9 @@ rule run_alignment:
         "Now performing an alignment"
     run:
         shell("mkdir -p {output} ;")
-        "dbsnp_138.hg19.NoChrInNames.vcf.gz"
-        # ref_seq = f'{dataDir}HG19_GATKbundle2.8_noDecoys.noChrInName.fa.gz'
-        ref_seq = f'{dataDir}dbsnp_138.hg19.NoChrInNames.vcf.gz'
+        # "dbsnp_138.hg19.NoChrInNames.vcf.gz"
+        ref_seq = f'{dataDir}HG19_GATKbundle2.8_noDecoys.noChrInName.fa.gz'
+        # ref_seq = f'{dataDir}dbsnp_138.hg19.NoChrInNames.vcf.gz'
         align_read1 = ''
         align_read2 = ''
         for reads in get_seqs(input):
@@ -85,10 +85,10 @@ rule run_alignment:
                     align_read1 = str(input) + '/' + str(read)
                 elif str(read).endswith("_2P.fq.gz"):
                     align_read2 = str(input) + '/' + str(read)
-        print('align_read1', align_read1)
-        print('align_read2', align_read2)
-        # shell("bwa-mem2 index {ref_seq} ; ")
-        # shell("bwa-mem2 mem -t {threads} {ref_seq} {align_read1} {align_read2} > {output}/aligned_output.sam ;")
+        # print('align_read1', align_read1)
+        # print('align_read2', align_read2)
+        shell("bwa-mem2 index {ref_seq} ; ")
+        shell("bwa-mem2 mem -t {threads} {ref_seq} {align_read1} {align_read2} > {output}/aligned_output.sam ;")
 
 rule convert_sam_to_bam:
     input:
