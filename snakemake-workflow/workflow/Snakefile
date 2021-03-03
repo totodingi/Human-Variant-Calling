@@ -85,11 +85,22 @@ rule run_alignment:
         shell("bwa-mem2 index {ref_seq} ; ")
         shell("bwa-mem2 mem -t {threads} {ref_seq} {align_read1} {align_read2} > {output} ;")
 
+rule convert_sam_to_bam:
+    input:
+        rules.run_alignment.output
+    output:
+        "../results/alignment/aligned_output.bam"
+    message:
+        "Now converting the sam file into a bam file"
+    shell:
+        "picard SamFormatConverter I={input} O={output}"
+
 rule all:
     input:
         rules.run_fastqc.output,
         rules.trim_sequences.output,
         rules.trimmed_fastqc.output,
-        rules.run_alignment.output
+        rules.run_alignment.output,
+        rules.convert_sam_to_bam.output
     message:
         "Running the workflow"
