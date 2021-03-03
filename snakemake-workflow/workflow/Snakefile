@@ -85,7 +85,7 @@ rule run_alignment:
         shell("Starting indexing ;")
         shell("bwa-mem2 index {ref_seq} ; ")
         shell("Done with the indexing ;")
-        # shell("bwa-mem2 mem -t {threads} {ref_seq} {align_read1} {align_read2} > {output} ;")
+        shell("bwa-mem2 mem -t {threads} {ref_seq} {align_read1} {align_read2} > {output} ;")
 
 rule convert_sam_to_bam:
     input:
