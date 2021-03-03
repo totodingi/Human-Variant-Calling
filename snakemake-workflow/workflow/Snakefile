@@ -100,6 +100,16 @@ rule convert_sam_to_bam:
     shell:
         "picard SamFormatConverter I={input} O={output}"
 
+rule mark_duplicates:
+    input:
+        rules.convert_sam_to_bam.output
+    output:
+        directory('../results/duplicates/')
+    shell:
+        "mkdir -p {output} ; "
+        "picard MarkDuplicates I={input} O={output}/marked_duplicates.bam M={output}/marked_duplicates_metrics.txt"
+
+
 rule all:
     input:
         rules.run_fastqc.output,
