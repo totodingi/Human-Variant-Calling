@@ -108,7 +108,7 @@ rule mark_duplicates:
         directory('../results/duplicates/')
     shell:
         "mkdir -p {output} ; "
-        "picard MarkDuplicates -I {input}/aligned_output.bam -O {output}/marked_duplicates.bam -M {output}/marked_duplicates_metrics.txt -ASSUME_SORT_ORDER unsorted"
+        "picard MarkDuplicates -I {input}/aligned_output.bam -O {output}/marked_duplicates.bam -M {output}/marked_duplicates_metrics.txt -ASSUME_SORT_ORDER unknown"
 
 
 rule all:
