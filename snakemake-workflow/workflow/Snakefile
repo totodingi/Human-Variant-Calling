@@ -132,7 +132,7 @@ rule base_recalibration:
         "mkdir -p {output} ;"
         "gatk BaseRecalibrator -I {input} -R {ref_seq} "
         "-O {output}/recalibrated.table "
-        "{{ for site in {indelsDir}/*.vcf; do return --known-sites $site }}"
+        "{{ for site in {indelsDir}/*.vcf; do return --known-sites $site }} $?"
         "--known-sites {known_vcf}"
 
 
