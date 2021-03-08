@@ -1,6 +1,7 @@
 
 projectDir = "../../"
 dataDir = f"{projectDir}datasets/H3A_VarCall_TestData/WES_chr1_50X_E0.005/"
+indelsDir = f"{dataDir}indels_per_chr_with_chr_added.unzipped"
 # reads = f"{dataDir}*read*"
 read1 = f"{dataDir}WES_chr1_50X_E0.005_merged_read1.fq.gz"
 read2 = f"{dataDir}WES_chr1_50X_E0.005_merged_read2.fq.gz"
@@ -8,6 +9,7 @@ read2 = f"{dataDir}WES_chr1_50X_E0.005_merged_read2.fq.gz"
 # read_2 = "../../datasets/H3A_VarCall_TestData/WES_chr1_50X_E0.005/WES_chr1_50X_E0.005_merged_read2.fq.gz"
 threads = 100
 ref_seq = f'{dataDir}HG19_GATKbundle2.8_noDecoys.noChrInName.fa.gz'
+known_vcf = f'{dataDir}dbsnp_138.hg19.NoChrInNames.vcf.gz'
 rule run_fastqc:
     input:
         read1,
@@ -76,7 +78,7 @@ rule run_alignment:
         shell("mkdir -p {output} ;")
         # "dbsnp_138.hg19.NoChrInNames.vcf.gz"
         ref_seq = f'{dataDir}HG19_GATKbundle2.8_noDecoys.noChrInName.fa.gz'
-        # ref_seq = f'{dataDir}dbsnp_138.hg19.NoChrInNames.vcf.gz'
+
         align_read1 = ''
         align_read2 = ''
         for reads in get_seqs(input):
@@ -111,6 +113,15 @@ rule mark_duplicates:
         "mkdir -p {output} ; "
         "picard MarkDuplicates -I {input}/aligned_output.bam -O {output}/marked_duplicates.bam -M {output}/marked_duplicates_metrics.txt -ASSUME_SORT_ORDER queryname"
 
+def get_indels(dir):
+    files = os.listdir(dir)
+    print("Files::", files)
+    vcf_files = []
+    for file in files:
+        if str(file).endswith('.vcf'):
+            vcf_files.append(file)
+    return files
+
 
 rule base_recalibration:
     input:
@@ -119,7 +130,12 @@ rule base_recalibration:
         directory('../results/recalibration/')
     shell:
         "mkdir -p {output} ;"
-        "gatk BaseRecalibrator -I {input} -R {ref_seq} -O {output}/recalibrated.table"
+        "gatk BaseRecalibrator -I {input} -R {ref_seq} "
+        "-O {output}/recalibrated.table "
+        "for site in {indelsDir}/*.vcf; do echo --known-sites ${site} ; done; "
+        " $? "
+        "--known-sites {known_vcf}"
+
 
 
 
