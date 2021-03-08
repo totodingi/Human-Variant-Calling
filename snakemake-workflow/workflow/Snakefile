@@ -131,8 +131,7 @@ rule base_recalibration:
         directory('../results/recalibration/')
     shell:
         "mkdir -p {output} ;"
-        "unziped=$(gzip -d {ref_seq}) ;"
-        "gatk BaseRecalibrator -I {input} -R $unziped "
+        "gatk BaseRecalibrator -I {input} -R  {dataDir}/*.fa"
         "-O {output}/recalibrated.table "
         "--known-sites {known_vcf}"
 
