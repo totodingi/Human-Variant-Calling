@@ -10,6 +10,7 @@ read2 = f"{dataDir}WES_chr1_50X_E0.005_merged_read2.fq.gz"
 threads = 100
 ref_seq = f'{dataDir}HG19_GATKbundle2.8_noDecoys.noChrInName.fa.gz'
 known_vcf = f'{dataDir}dbsnp_138.hg19.NoChrInNames.vcf.gz'
+vcf_ref = f"{dataDir}/WES_chr1_50X_E0.005_merged_golden.NoChrInNames.vcf"
 rule run_fastqc:
     input:
         read1,
@@ -130,7 +131,7 @@ rule base_recalibration:
         directory('../results/recalibration/')
     shell:
         "mkdir -p {output} ;"
-        "gatk BaseRecalibrator -I {input} -R {ref_seq} "
+        "gatk BaseRecalibrator -I {input} -R {vcf_ref} "
         "-O {output}/recalibrated.table "
         "--known-sites {known_vcf}"
 
