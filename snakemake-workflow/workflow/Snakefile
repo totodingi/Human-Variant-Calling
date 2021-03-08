@@ -131,7 +131,7 @@ rule base_recalibration:
         directory('../results/recalibration/')
     shell:
         "mkdir -p {output} ;"
-        "gatk BaseRecalibrator -I {input} -R {vcf_ref} "
+        "gatk BaseRecalibrator -I {input} -R gzip -d {ref_seq} "
         "-O {output}/recalibrated.table "
         "--known-sites {known_vcf}"
 
