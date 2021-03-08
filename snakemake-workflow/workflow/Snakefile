@@ -7,6 +7,7 @@ read2 = f"{dataDir}WES_chr1_50X_E0.005_merged_read2.fq.gz"
 # read_1 = f"{projectDir}datasets/H3A_VarCall_TestData/WES_chr1_50X_E0.005/WES_chr1_50X_E0.005_merged_read1.fq.gz"
 # read_2 = "../../datasets/H3A_VarCall_TestData/WES_chr1_50X_E0.005/WES_chr1_50X_E0.005_merged_read2.fq.gz"
 threads = 100
+ref_seq = f'{dataDir}HG19_GATKbundle2.8_noDecoys.noChrInName.fa.gz'
 rule run_fastqc:
     input:
         read1,
@@ -111,12 +112,25 @@ rule mark_duplicates:
         "picard MarkDuplicates -I {input}/aligned_output.bam -O {output}/marked_duplicates.bam -M {output}/marked_duplicates_metrics.txt -ASSUME_SORT_ORDER queryname"
 
 
+rule base_recalibration:
+    input:
+        f"{rules.mark_duplicates.output}/marked_duplicates.bam"
+    output:
+        directory('../results/recalibration/')
+    shell:
+        "mkdir -p {output} ;"
+        "gatk BaseRecalibrator -I {input} -R {ref_seq} -O {output}/recalibrated.table"
+
+
+
+
 rule all:
     input:
         rules.run_fastqc.output,
         rules.trim_sequences.output,
         rules.trimmed_fastqc.output,
         rules.run_alignment.output,
-        rules.convert_sam_to_bam.output
+        rules.convert_sam_to_bam.output,
+        rules.base_recalibration.output
     message:
         "Running the workflow"
