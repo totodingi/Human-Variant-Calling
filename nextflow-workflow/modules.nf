@@ -16,11 +16,11 @@ process RUN_FASTQC{
         path read2
 
     output:
-        path "$baseDir/results/fastqc"
+        path "results/fastqc/"
 
     script:
     """
-    mkdir -p "$baseDir/results/fastqc"
-    fastqc -o "$baseDir/results/fastqc" --extract $read1 $read2
+    mkdir -p "results/fastqc/"
+    fastqc -o "results/fastqc/" --extract $read1 $read2
     """
 }
