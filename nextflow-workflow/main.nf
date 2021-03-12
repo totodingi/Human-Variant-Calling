@@ -23,7 +23,8 @@ Import modules here
 */
 
 include {
-    RUN_FASTQC
+    RUN_FASTQC;
+    TRIM_SEQUENCES
 } from "./modules.nf"
 
 
@@ -35,6 +36,6 @@ Declare the main pipepline below:
 
 workflow {
     // Process 1: Quality controls
-    println "params here: $params.read1"
     RUN_FASTQC(params.read1, params.read2)
+    TRIM_SEQUENCES(params.read1, params.read2)
 }
