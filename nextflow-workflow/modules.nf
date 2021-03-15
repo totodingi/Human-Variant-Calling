@@ -11,7 +11,7 @@ Proces 1: Run a quality check on the data using a fastqc tool
 */
 
 process RUN_FASTQC{
-    publishDir "$baseDir/results/fastqc/", mode: 'copy'
+    publishDir "$baseDir/results/fastqc/", mode: 'move'
 
     input:
         path read1
@@ -34,7 +34,7 @@ Process 2:
 */
 
 process TRIM_SEQUENCES{
-    publishDir "$baseDir/results/trimmomatic/", mode: 'copy'
+    publishDir "$baseDir/results/trimmomatic/", mode: 'move'
     input:
         path read1
         path read2
