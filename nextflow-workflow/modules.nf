@@ -11,14 +11,14 @@ Proces 1: Run a quality check on the data using a fastqc tool
 */
 
 process RUN_FASTQC{
-    publishDir "$baseDir/results/fastqc/", mode: 'move'
+    publishDir "$baseDir/results/fastqc/", mode: 'copy'
 
     input:
         path read1
         path read2
 
     output:
-        path "results"
+        path "results/"
 
     script:
     """
@@ -35,18 +35,22 @@ Process 2:
 */
 
 process TRIM_SEQUENCES{
-    publishDir "$baseDir/results/trimmomatic/", mode: 'move'
+    publishDir "$baseDir/results/trimmomatic/", mode: 'copy'
     input:
         path read1
         path read2
 
     output:
-        path "results"
+        path "results/"
 
     script:
     """
     mkdir -p results
-    trimmomatic PE $read1 $read2 -baseout 'results/filtered_reads.fq.gz' \
-    -trimlog 'results/trim.log' -phred64 MINLEN:36
+    trimmomatic PE \
+    $read1 $read2 \
+    -baseout 'results/filtered_reads.fq.gz' \
+    -trimlog 'results/trim.log' \
+    -phred64 \
+    MINLEN:36
     """
 }
