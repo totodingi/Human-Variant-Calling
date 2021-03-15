@@ -45,6 +45,7 @@ process TRIM_SEQUENCES{
 
     script:
     """
+    mkdir -p results
     trimmomatic PE \
     $read1 $read2 \
     -baseout 'results/filtered_reads.fq.gz' \
