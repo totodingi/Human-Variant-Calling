@@ -18,10 +18,11 @@ process RUN_FASTQC{
         path read2
 
     output:
-        path "results/"
+        path "results"
 
     script:
     """
+    mkdir results
     fastqc -o results --extract $read1 $read2
     """
 }
@@ -40,7 +41,7 @@ process TRIM_SEQUENCES{
         path read2
 
     output:
-        path "results"
+        path "results/"
 
     script:
     """
