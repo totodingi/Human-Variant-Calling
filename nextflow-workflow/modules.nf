@@ -22,7 +22,7 @@ process RUN_FASTQC{
 
     script:
     """
-    mkdir results
+    mkdir -p results
     fastqc -o results --extract $read1 $read2
     """
 }
@@ -41,10 +41,11 @@ process TRIM_SEQUENCES{
         path read2
 
     output:
-        path "results/"
+        path "results"
 
     script:
     """
+    mkdir -p results
     trimmomatic PE $read1 $read2 -baseout 'results/filtered_reads.fq.gz' \
     -trimlog 'results/trim.log' -phred64 MINLEN:36
     """
