@@ -11,19 +11,19 @@ Proces 1: Run a quality check on the data using a fastqc tool
 */
 
 process RUN_FASTQC{
-    publishDir "$baseDir/results/fastqc/", mode: 'copy'
+    publishDir "$baseDir/results/", mode: 'copy'
 
     input:
         path read1
         path read2
 
     output:
-        path "results/"
+        path "fastqc/"
 
     script:
     """
-    mkdir -p results
-    fastqc -o results --extract $read1 $read2
+    mkdir -p fastqc
+    fastqc -o fastqc --extract $read1 $read2
     """
 }
 
@@ -35,21 +35,21 @@ Process 2:
 */
 
 process TRIM_SEQUENCES{
-    publishDir "$baseDir/results/trimmomatic/", mode: 'copy'
+    publishDir "$baseDir/results/", mode: 'copy'
     input:
         path read1
         path read2
 
     output:
-        path "results/"
+        path "trimmomatic/"
 
     script:
     """
-    mkdir -p results
+    mkdir -p trimmomatic
     trimmomatic PE \
     $read1 $read2 \
-    -baseout 'results/filtered_reads.fq.gz' \
-    -trimlog 'results/trim.log' \
+    -baseout 'trimmomatic/filtered_reads.fq.gz' \
+    -trimlog 'trimmomatic/trim.log' \
     -phred64 \
     MINLEN:36
     """
